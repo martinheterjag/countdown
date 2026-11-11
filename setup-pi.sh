@@ -16,7 +16,7 @@ mkdir -p "$(dirname "$PORT")"
 cat > "$PORT" <<EOF
 #!/bin/bash
 SIZE=\$(cat /sys/class/graphics/fb0/virtual_size)
-xinit $BROWSER --kiosk --noerrdialogs --incognito --lang=sv --disable-features=Translate --window-position=0,0 --window-size=\$SIZE file:///home/pi/morgonrutin/index.html -- -nocursor
+xinit $BROWSER --kiosk --noerrdialogs --incognito --lang=sv --disable-features=Translate --window-position=0,0 --window-size=\$SIZE file:///home/pi/morgonrutin/index.html -- -nocursor -s 0 -dpms
 EOF
 chmod +x "$PORT"
 
