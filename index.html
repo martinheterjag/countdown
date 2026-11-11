@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morgonrutin</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg1: #ffe9b8;
+    --bg2: #ffd1e3;
+    --card: #ffffff;
+    --ink: #3b2a5a;
+    --clock: #4cc9f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Baloo 2", "Comic Sans MS", system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 24px;
+    padding: 24px;
+  }
+  .panel {
+    background: var(--card);
+    border-radius: 32px;
+    box-shadow: 0 10px 0 rgba(59, 42, 90, .15);
+    padding: 24px;
+  }
+
+  /* Timer */
+  .timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
+  }
+  .timer h1 { margin: 0; font-size: clamp(28px, 4vw, 48px); }
+  .pie {
+    width: min(85vw, 65vh, 800px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 12px solid var(--ink);
+    background: conic-gradient(var(--clock) calc(var(--p, 1) * 1turn), #f3f0fa 0);
+    display: grid;
+    place-items: center;
+    transition: background .5s;
+  }
+  .pie span {
+    background: #fff;
+    border-radius: 50%;
+    width: 45%;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    font-size: clamp(60px, 10vw, 180px);
+    font-weight: 800;
+    box-shadow: 0 4px 0 rgba(59, 42, 90, .2);
+  }
+  .left { font-size: clamp(24px, 3vw, 40px); margin: 0; }
+  .now { font-size: clamp(18px, 2vw, 26px); opacity: .7; margin: 0; }
+  .go .pie { animation: wiggle .6s infinite; }
+
+  /* List */
+  .list h2 { margin: 0 0 12px; font-size: clamp(28px, 4vw, 48px); text-align: center; }
+  ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 16px;
+    border: 4px solid var(--ink);
+    border-radius: 24px;
+    background: var(--c);
+    font-size: clamp(22px, 3vw, 36px);
+  }
+  .pic { font-size: clamp(40px, 5vw, 64px); line-height: 1; }
+  .word { flex: 1; font-weight: 800; }
+  .weather {
+    position: fixed;
+    right: 40px;
+    bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 4px solid var(--ink);
+    border-radius: 24px;
+    padding: 8px 20px;
+    font-size: clamp(24px, 3vw, 40px);
+    font-weight: 800;
+  }
+  .weather:empty { display: none; }
+  .weather .pic { font-size: clamp(40px, 5vw, 64px); }
+  @keyframes wiggle { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+
+  @media (max-width: 800px) {
+    body { grid-template-columns: 1fr; padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<section class="panel list">
+  <h2>Mina uppgifter</h2>
+  <ol id="tasks"></ol>
+</section>
+
+<section class="panel timer" id="timer">
+  <h1 id="title">Snart dags att gå!</h1>
+  <div class="pie" id="pie"><span id="mins">45</span></div>
+  <p class="left" id="left">minuter kvar</p>
+  <p class="now" id="now"></p>
+</section>
+
+<div class="weather" id="weather"></div>
+
+<script>
+  const WAKE = "05:45";
+  const LEAVE = "06:30";
+  const NIGHT = "09:00";
+  const PLACE = { lat: 58.59, lon: 16.19 }; // Norrköping
+
+  const TASKS = [
+    { pic: "👕", word: "Klä på dig", c: "#ffd6a5" },
+    { pic: "🦷", word: "Borsta tänderna", c: "#bde0fe" },
+    { pic: "💇", word: "Borsta håret", c: "#ffc8dd" },
+    { pic: "🚽", word: "Gå på toa", c: "#caffbf" },
+    { pic: "🧥", word: "Jacka", c: "#fdffb6" },
+    { pic: "👟", word: "Skor", c: "#e0c3fc" },
+  ];
+
+  const list = document.getElementById("tasks");
+  TASKS.forEach(t => {
+    const li = document.createElement("li");
+    li.style.setProperty("--c", t.c);
+    li.innerHTML = `<span class="pic">${t.pic}</span><span class="word">${t.word}</span>`;
+    list.appendChild(li);
+  });
+
+  // ?tid=06:10 in the URL starts the clock at that time (for testing)
+  const fake = new URLSearchParams(location.search).get("tid");
+  const offset = fake ? at(fake) - new Date() : 0;
+
+  function at(hhmm) {
+    const [h, m] = hhmm.split(":").map(Number);
+    const d = new Date();
+    d.setHours(h, m, 0, 0);
+    return d;
+  }
+
+  const pie = document.getElementById("pie");
+  const mins = document.getElementById("mins");
+  const left = document.getElementById("left");
+  const title = document.getElementById("title");
+  const now = document.getElementById("now");
+  const timer = document.getElementById("timer");
+
+  function tick() {
+    const t = new Date(Date.now() + offset);
+    const total = at(LEAVE) - at(WAKE);
+    const rest = at(LEAVE) - t;
+    const p = Math.min(1, Math.max(0, rest / total));
+    const m = Math.ceil(rest / 60000);
+
+    pie.style.setProperty("--p", p);
+    pie.style.setProperty("--clock", m > 15 ? "#4cc9f0" : m > 5 ? "#ffb703" : "#ef476f");
+    now.textContent = "Klockan är " + t.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
+
+    const night = t >= at(NIGHT);
+    const go = rest <= 0 && !night;
+    timer.classList.toggle("go", go);
+    if (night) {
+      pie.style.setProperty("--p", 0);
+      title.textContent = "Är du bajsnödig?";
+      mins.textContent = "🚽";
+      left.textContent = "";
+    } else if (go) {
+      title.textContent = "Dags att gå! 🚀";
+      mins.textContent = "👟";
+      left.textContent = "Skorna på!";
+    } else {
+      title.textContent = "Snart dags att gå!";
+      mins.textContent = m;
+      left.textContent = m === 1 ? "minut kvar" : "minuter kvar";
+    }
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  const WEATHER = {
+    0: ["☀️", "Sol"], 1: ["🌤️", "Mest sol"], 2: ["⛅", "Lite moln"], 3: ["☁️", "Moln"],
+    45: ["🌫️", "Dimma"], 48: ["🌫️", "Dimma"],
+    51: ["🌦️", "Duggregn"], 53: ["🌦️", "Duggregn"], 55: ["🌦️", "Duggregn"],
+    56: ["🌧️", "Isregn"], 57: ["🌧️", "Isregn"],
+    61: ["🌧️", "Regn"], 63: ["🌧️", "Regn"], 65: ["🌧️", "Mycket regn"],
+    66: ["🌧️", "Isregn"], 67: ["🌧️", "Isregn"],
+    71: ["🌨️", "Snö"], 73: ["🌨️", "Snö"], 75: ["❄️", "Mycket snö"], 77: ["🌨️", "Snö"],
+    80: ["🌦️", "Regnskurar"], 81: ["🌧️", "Regnskurar"], 82: ["🌧️", "Mycket regn"],
+    85: ["🌨️", "Snöbyar"], 86: ["❄️", "Snöbyar"],
+    95: ["⛈️", "Åska"], 96: ["⛈️", "Åska"], 99: ["⛈️", "Åska"],
+  };
+
+  async function weather() {
+    try {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${PLACE.lat}&longitude=${PLACE.lon}&current=temperature_2m,weather_code&timezone=auto`;
+      const c = (await (await fetch(url)).json()).current;
+      const [pic, word] = WEATHER[c.weather_code] || ["🌡️", ""];
+      document.getElementById("weather").innerHTML =
+        `<span class="pic">${pic}</span><span>${Math.round(c.temperature_2m)}°</span><span>${word}</span>`;
+    } catch (e) {}
+  }
+  weather();
+  setInterval(weather, 15 * 60 * 1000);
+</script>
+</body>
+</html>
