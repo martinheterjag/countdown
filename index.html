@@ -226,6 +226,20 @@
   tick();
   setInterval(tick, 1000);
 
+  // Each flight is usually a rocket, but sometimes a surprise
+  function flyer() {
+    const chances = [["💎", 1 / 10000], ["👻", 1 / 1000], ["⚽", 1 / 1000], ["💩", 1 / 300], ["🦭", 1 / 150]];
+    let r = Math.random();
+    for (const [pic, p] of chances) {
+      if (r < p) return pic;
+      r -= p;
+    }
+    return "🚀";
+  }
+  document.querySelectorAll(".rockets span").forEach(el => {
+    el.addEventListener("animationiteration", () => { el.textContent = flyer(); });
+  });
+
   const WEATHER = {
     0: ["☀️", "Sol"], 1: ["🌤️", "Mest sol"], 2: ["⛅", "Lite moln"], 3: ["☁️", "Moln"],
     45: ["🌫️", "Dimma"], 48: ["🌫️", "Dimma"],
