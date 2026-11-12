@@ -43,7 +43,7 @@
   }
   .timer h1 { margin: 0; font-size: clamp(28px, 4vw, 48px); }
   .pie {
-    width: min(85vw, 65vh, 800px);
+    width: min(85vw, 55vh, 800px);
     aspect-ratio: 1;
     border-radius: 50%;
     border: 12px solid var(--ink);
@@ -64,7 +64,8 @@
     box-shadow: 0 4px 0 rgba(59, 42, 90, .2);
   }
   .left { font-size: clamp(24px, 3vw, 40px); margin: 0; }
-  .now { font-size: clamp(26px, 3vw, 44px); opacity: .7; margin: 0; }
+  .now { font-size: clamp(18px, 2vw, 26px); margin: 0; }
+  .now b { display: block; font-size: clamp(48px, 6vw, 96px); line-height: 1; }
   .go .pie { animation: wiggle .6s infinite; }
 
   /* List */
@@ -115,6 +116,8 @@
     animation: fly var(--t) linear var(--d) infinite;
   }
   @keyframes fly { to { transform: translate(140vh, -140vh); } }
+  .night #mins { animation: spin 40s ease-in-out infinite; }
+  @keyframes spin { 0%, 94% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
   @keyframes wiggle { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
 
   @media (max-width: 800px) {
@@ -133,7 +136,7 @@
   <h1 id="title">Snart dags att gå!</h1>
   <div class="pie" id="pie"><span id="mins">45</span></div>
   <p class="left" id="left">minuter kvar</p>
-  <p class="now" id="now"></p>
+  <p class="now">Klockan är<b id="now"></b></p>
 </section>
 
 <div class="rockets">
@@ -199,11 +202,12 @@
     pie.style.setProperty("--clock", m > 15 ? "#4cc9f0" : m > 5 ? "#ffb703" : "#ef476f");
     const day = t.toLocaleDateString("sv-SE", { weekday: "long" });
     document.getElementById("day").textContent = day[0].toUpperCase() + day.slice(1);
-    now.textContent = "Klockan är " + t.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
+    now.textContent = t.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
 
     const night = t >= at(NIGHT);
     const go = rest <= 0 && !night;
     timer.classList.toggle("go", go);
+    timer.classList.toggle("night", night);
     if (night) {
       pie.style.setProperty("--p", 0);
       title.textContent = "Är du bajsnödig?";
