@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installs the morning routine page as a RetroPie port. Run on the Pi from the folder containing index.html.
+# Installs the morning routine page as a RetroPie port. Run on the Pi from the folder containing index.html and config.js.
 set -e
 
 sudo apt update
@@ -9,7 +9,7 @@ sudo apt install -y --no-install-recommends chromium-browser || sudo apt install
 BROWSER=$(command -v chromium-browser || command -v chromium)
 
 mkdir -p /home/pi/morgonrutin
-cp index.html /home/pi/morgonrutin/
+cp index.html config.js /home/pi/morgonrutin/
 
 PORT=/home/pi/RetroPie/roms/ports/Morgonrutin.sh
 mkdir -p "$(dirname "$PORT")"
