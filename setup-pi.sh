@@ -3,8 +3,13 @@
 set -e
 
 sudo apt update
-sudo apt install -y --no-install-recommends xserver-xorg xserver-xorg-legacy xinit x11-xserver-utils fonts-noto-color-emoji
+sudo apt install -y --no-install-recommends xserver-xorg xserver-xorg-legacy xinit x11-xserver-utils curl
 sudo apt install -y --no-install-recommends chromium-browser || sudo apt install -y --no-install-recommends chromium
+
+sudo mkdir -p /usr/local/share/fonts
+sudo curl -sSfL -o /usr/local/share/fonts/NotoColorEmoji.ttf \
+  https://github.com/googlefonts/noto-emoji/raw/v2.047/fonts/NotoColorEmoji.ttf
+sudo fc-cache -f
 
 BROWSER=$(command -v chromium-browser || command -v chromium)
 

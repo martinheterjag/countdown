@@ -62,4 +62,4 @@ Then restart EmulationStation and choose **Ports → Morgonrutin**. The page run
 Notes:
 
 - The Pi needs the correct time zone: `sudo timedatectl set-timezone Europe/Stockholm`.
-- The emoji font on Raspbian Buster is from 2018, so newer emojis show as boxes.
+- The emoji font from Raspbian Buster is too old, so the script installs Noto Color Emoji v2.047 from GitHub instead.
