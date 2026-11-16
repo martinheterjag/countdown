@@ -9,7 +9,7 @@ A kid-friendly morning routine display for a TV. It shows the routine tasks with
 | 00:00 – 05:45 | Countdown, full circle, more than 45 minutes left                |
 | 05:45 – 06:30 | Countdown, the circle shrinks and changes colour                 |
 | 06:30 – 09:00 | "Dags att gå! 🚀" (time to go)                                    |
-| 09:00 – 24:00 | 🚽 "Är du bajsnödig?" (do you need to poop?)                       |
+| 09:00 – 24:00 | 💩 "Är du bajsnödig?" (do you need to poop?)                       |
 
 The times above use the defaults in `config.js` (leave at 06:30, 45 minutes).
 
@@ -46,6 +46,12 @@ Add `?tid=HH:MM` to the URL to start the clock at that time:
 
 ```text
 index.html?tid=06:20
+```
+
+Add `?creeper` to make the creeper peek in every 10 seconds instead of about once an hour:
+
+```text
+index.html?creeper
 ```
 
 ## Raspberry Pi with RetroPie
