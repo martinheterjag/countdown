@@ -7,11 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg1: #ffe9b8;
-    --bg2: #ffd1e3;
-    --card: #ffffff;
-    --ink: #3b2a5a;
-    --clock: #4cc9f0;
+    --bg1: #1c1b3d;
+    --bg2: #3a2a5c;
+    --card: #2b2952;
+    --ink: #fdf3e7;
+    --line: #15142e;
+    --empty: #3d3a6b;
+    --clock: #48b5d9;
   }
   * { box-sizing: border-box; }
   body {
@@ -28,7 +30,7 @@
   .panel {
     background: var(--card);
     border-radius: 32px;
-    box-shadow: 0 10px 0 rgba(59, 42, 90, .15);
+    box-shadow: 0 10px 0 rgba(0, 0, 0, .3);
     padding: 24px;
   }
 
@@ -46,14 +48,14 @@
     width: min(85vw, 55vh, 800px);
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 12px solid var(--ink);
-    background: conic-gradient(var(--clock) calc(var(--p, 1) * 1turn), #f3f0fa 0);
+    border: 12px solid var(--line);
+    background: conic-gradient(var(--clock) calc(var(--p, 1) * 1turn), var(--empty) 0);
     display: grid;
     place-items: center;
     transition: background .5s;
   }
   .pie span {
-    background: #fff;
+    background: var(--card);
     border-radius: 50%;
     width: 45%;
     aspect-ratio: 1;
@@ -61,7 +63,7 @@
     place-items: center;
     font-size: clamp(60px, 10vw, 180px);
     font-weight: 800;
-    box-shadow: 0 4px 0 rgba(59, 42, 90, .2);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, .3);
   }
   .left { font-size: clamp(24px, 3vw, 40px); margin: 0; }
   .now { font-size: clamp(18px, 2vw, 26px); margin: 0; }
@@ -76,7 +78,7 @@
     align-items: center;
     gap: 16px;
     padding: 10px 16px;
-    border: 4px solid var(--ink);
+    border: 4px solid var(--line);
     border-radius: 24px;
     background: var(--c);
     font-size: clamp(26px, 3.5vw, 44px);
@@ -90,8 +92,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: #fff;
-    border: 4px solid var(--ink);
+    background: var(--card);
+    border: 4px solid var(--line);
     border-radius: 24px;
     padding: 8px 20px;
     font-size: clamp(24px, 3vw, 40px);
@@ -117,7 +119,23 @@
   }
   @keyframes fly { to { transform: translate(140vh, -140vh); } }
   .night #mins { animation: spin 40s ease-in-out infinite; }
+  .night #mins.turbo { animation: turbo 40s ease-in-out; }
   @keyframes spin { 0%, 94% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+  @keyframes turbo { 0%, 85% { transform: rotate(0); } 100% { transform: rotate(10800deg); } }
+  .creeper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: clamp(120px, 15vw, 240px);
+    z-index: 6;
+    pointer-events: none;
+    transform: translate(-100%, 100%);
+    transition: transform 1.5s ease-in-out;
+  }
+  .creeper svg { display: block; width: 100%; }
+  .creeper.right { left: auto; right: 0; transform: translate(100%, 100%); }
+  .creeper.peek { transform: translate(-35%, 25%) rotate(25deg); }
+  .creeper.right.peek { transform: translate(35%, 25%) rotate(-25deg); }
   @keyframes wiggle { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
 
   @media (max-width: 800px) {
@@ -148,6 +166,14 @@
   <span style="--x:65vw;  --t:2.6s; --d:1.2s">🚀</span>
 </div>
 
+<div class="creeper" id="creeper">
+  <svg viewBox="0 0 8 8" shape-rendering="crispEdges">
+    <rect width="8" height="8" fill="#5daa3a"/>
+    <path fill="#4c8f2f" d="M0 0h1v1H0zM3 1h2v1H3zM6 0h2v1H6zM0 5h1v2H0zM7 4h1v2H7zM4 0h1v1H4z"/>
+    <path fill="#111" d="M1 2h2v2H1zM5 2h2v2H5zM3 4h2v1H3zM2 5h4v2H2zM2 7h1v1H2zM5 7h1v1H5z"/>
+  </svg>
+</div>
+
 <div class="weather"><span id="day"></span><span id="wx"></span></div>
 
 <script src="config.js"></script>
@@ -156,13 +182,13 @@
   const PLACE = { lat: 58.59, lon: 16.19 }; // Norrköping
 
   const TASKS = [
-    { pic: "👕", word: "Klä på dig", c: "#ffd6a5" },
-    { pic: "🪥", word: "Borsta tänderna", c: "#bde0fe" },
-    { pic: "💇", word: "Borsta håret", c: "#ffc8dd" },
-    { pic: "💩", word: "Gå på toa", c: "#caffbf" },
-    { pic: "🧥", word: "Jacka", c: "#fdffb6" },
-    { pic: "👟", word: "Skor", c: "#e0c3fc" },
-    { pic: "🍎🦭", word: "Packa frukt och gosedjur", c: "#ffadad" },
+    { pic: "👕", word: "Klä på dig", c: "#b8622e" },
+    { pic: "🪥", word: "Borsta tänderna", c: "#33669e" },
+    { pic: "💇", word: "Borsta håret", c: "#a8456f" },
+    { pic: "🚽", word: "Gå på toa", c: "#2f7d4f" },
+    { pic: "🧥", word: "Jacka", c: "#8f7420" },
+    { pic: "👟", word: "Skor", c: "#64489e" },
+    { pic: "🍎🦭", word: "Packa frukt och gosedjur", c: "#a83c3f" },
   ];
 
   const list = document.getElementById("tasks");
@@ -191,6 +217,13 @@
   const now = document.getElementById("now");
   const timer = document.getElementById("timer");
 
+  // Every 10th spin of the poop is a fast one.
+  let spins = 0;
+  mins.addEventListener("animationiteration", () => {
+    if (++spins % 9 === 0) mins.classList.add("turbo");
+  });
+  mins.addEventListener("animationend", () => mins.classList.remove("turbo"));
+
   function tick() {
     const t = new Date(Date.now() + offset);
     const total = MINUTES * 60000;
@@ -199,7 +232,7 @@
     const m = Math.ceil(rest / 60000);
 
     pie.style.setProperty("--p", p);
-    pie.style.setProperty("--clock", m > 15 ? "#4cc9f0" : m > 5 ? "#ffb703" : "#ef476f");
+    pie.style.setProperty("--clock", m > 15 ? "#48b5d9" : m > 5 ? "#f0a02a" : "#e0506a");
     const day = t.toLocaleDateString("sv-SE", { weekday: "long" });
     document.getElementById("day").textContent = day[0].toUpperCase() + day.slice(1);
     now.textContent = t.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
@@ -211,7 +244,7 @@
     if (night) {
       pie.style.setProperty("--p", 0);
       title.textContent = "Är du bajsnödig?";
-      mins.textContent = "🚽";
+      mins.textContent = "💩";
       left.textContent = "";
     } else if (go) {
       title.textContent = "Dags att gå! 🚀";
@@ -239,6 +272,21 @@
   document.querySelectorAll(".rockets span").forEach(el => {
     el.addEventListener("animationiteration", () => { el.textContent = flyer(); });
   });
+
+  // A creeper peeks in from a bottom corner about once an hour.
+  // ?creeper in the URL makes it peek every 10 seconds (for testing).
+  const creeper = document.getElementById("creeper");
+  function peek() {
+    creeper.className = "creeper" + (Math.random() < .5 ? " right" : "");
+    setTimeout(() => creeper.classList.add("peek"), 100);
+    setTimeout(() => creeper.classList.remove("peek"), 5000);
+  }
+  if (new URLSearchParams(location.search).has("creeper")) {
+    setTimeout(peek, 1000);
+    setInterval(peek, 10000);
+  } else {
+    setInterval(() => { if (Math.random() < 1 / 60) peek(); }, 60000);
+  }
 
   const WEATHER = {
     0: ["☀️", "Sol"], 1: ["🌤️", "Mest sol"], 2: ["⛅", "Lite moln"], 3: ["☁️", "Moln"],
