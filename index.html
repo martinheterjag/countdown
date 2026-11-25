@@ -7,13 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg1: #1c1b3d;
-    --bg2: #3a2a5c;
-    --card: #2b2952;
+    --bg1: #3a1016;
+    --bg2: #6b1f2a;
+    --card: #561a23;
     --ink: #fdf3e7;
-    --line: #15142e;
-    --empty: #3d3a6b;
-    --clock: #48b5d9;
+    --line: #26080c;
+    --empty: #36101a;
+    --clock: #4fb86a;
   }
   * { box-sizing: border-box; }
   body {
@@ -117,6 +117,25 @@
     font-size: clamp(60px, 8vw, 140px);
     animation: fly var(--t) linear var(--d) infinite;
   }
+  .snow {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    display: none;
+    z-index: 4;
+  }
+  .timer:not(.go):not(.night) ~ .snow { display: block; }
+  .snow span {
+    position: absolute;
+    top: -10vh;
+    left: var(--x);
+    color: #fff;
+    opacity: .8;
+    font-size: calc(var(--s) * clamp(18px, 2.5vw, 40px));
+    animation: fall var(--t) linear var(--d) infinite;
+  }
+  @keyframes fall { to { transform: translate(8vw, 120vh) rotate(360deg); } }
   @keyframes fly { to { transform: translate(140vh, -140vh); } }
   .night #mins { animation: spin 40s ease-in-out infinite; }
   .night #mins.turbo { animation: turbo 40s ease-in-out; }
@@ -156,6 +175,8 @@
   <p class="left" id="left">minuter kvar</p>
   <p class="now">Klockan är<b id="now"></b></p>
 </section>
+
+<div class="snow" id="snow"></div>
 
 <div class="rockets">
   <span style="--x:-40vw; --t:3s;   --d:0s">🚀</span>
@@ -232,7 +253,7 @@
     const m = Math.ceil(rest / 60000);
 
     pie.style.setProperty("--p", p);
-    pie.style.setProperty("--clock", m > 15 ? "#48b5d9" : m > 5 ? "#f0a02a" : "#e0506a");
+    pie.style.setProperty("--clock", m > 15 ? "#4fb86a" : m > 5 ? "#f0a02a" : "#e0506a");
     const day = t.toLocaleDateString("sv-SE", { weekday: "long" });
     document.getElementById("day").textContent = day[0].toUpperCase() + day.slice(1);
     now.textContent = t.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
@@ -258,6 +279,15 @@
   }
   tick();
   setInterval(tick, 1000);
+
+  const snow = document.getElementById("snow");
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement("span");
+    s.textContent = "❄";
+    const t = 8 + Math.random() * 8;
+    s.style.cssText = `--x:${Math.random() * 100}vw; --t:${t}s; --d:${-Math.random() * t}s; --s:${.5 + Math.random()}`;
+    snow.appendChild(s);
+  }
 
   // Each flight is usually a rocket, but sometimes a surprise
   function flyer() {
